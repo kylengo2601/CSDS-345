@@ -1,0 +1,9 @@
+#lang racket
+; Kyle Ngo (ktn27)
+
+; Q1: dotproduct
+(define dotproduct
+  (lambda (lis1 lis2)
+    (cond
+      ((or (null? lis1) (null? lis2)) 0)
+      (else (+ (* (car lis1) (car lis2)) (dotproduct (cdr lis1) (cdr lis2)))))))

@@ -1,0 +1,120 @@
+#lang racket
+
+; continuation passing style
+
+(define replaceall
+  (lambda (a b lis)
+    (cond
+      ((null? lis) '())
+      ((eq? (car lis) a) (cons b (replaceall a b (cdr lis))))
+      (else (cons (car lis) (replaceall a b (cdr lis)))))))
+
+(define replaceall-cps
+  (lambda (a b lis return)
+    (cond
+      ((null? lis) return '())
+      ((eq? (car lis) a) (replaceall-cps a b (cdr lis) (lambda (v) (return (cons b v)))))
+      (else (replaceall-cps a b (cdr lis) (lambda (v) (return (cons (car lis) v))))))))
+
+(define replaceall2
+  (lambda (a b lis)
+    (replaceall-cps a b (lambda (v) v))))
+
+; removeall*
+(define removeall*
+  (lambda (x lis)
+    (cond
+      ((null? lis) '())
+      ((list? (car lis)) (cons (removeall* (car lis)) (removeall* x (cdr lis))))
+      ((eq? (car lis) x) (removeall* x (cdr lis)))
+      (else (cons (car lis) (removeall* x (cdr lis)))))))
+
+;(define removeall*-cps
+;  (lambda (x lis return)
+;    (cond
+;      ((null? lis) (return '()))
+;      ((list? (car lis)) (removeall*-cps x (car lis)
+;                                         (lambda (v1) (removeall*-cps x (cdr lis)
+;                                                                      (lambda (v2))))))
+;      ((eq? (car lis) x) (removeall*-cps x (cdr lis) return))
+;      (else (removeall*-cps x (cdr lis) (lambda (v) (return (cons (car lis) v))))))))
+
+
+; replaceall*-cps
+(define replaceall*
+  (lambda (a b lis)
+    (cond
+      ((null? lis) '())
+      ((list? (car lis)) (cons (replaceall* a b (car lis)) (replaceall* a b (cdr lis))))
+      ((eq? (car lis) a) (cons b (replaceall* a b (cdr lis))))
+      (else (cons (car lis) (replaceall* a b (cdr lis)))))))
+
+(define replaceall*-cps
+  (lambda (a b lis return)
+    (cond
+      ((null? lis) (return '()))
+      ((eq? (car lis) a) (replaceall*-cps a b (cdr lis) (lambda (v) (return (cons b v)))))
+      ((list? (car lis)) (replaceall*-cps a b (car lis) (lambda (v1) (replaceall*-cps a b (cdr lis) (lambda (v2) (return (cons v1 v2)))))))
+      (else (replaceall*-cps a b (cdr lis) (lambda (v) (return (cons (car lis) v))))))))
+
+; sumnumbers*-cps
+
+(define sumnumbers*-cps
+  (lambda (lis return)
+    (cond
+      ((null? lis) return 0)
+      ((number? (car lis)) (sumnumbers*-cps (cdr lis) (lambda (v) (return (+ v (car lis))))))
+      ((list? (car lis)) (sumnumbers*-cps (car lis) (lambda (v1) (sumnumbers*-cps (cdr lis) (lambda (v2) (return (+ v1 v2)))))))
+      (else (sumnumbers*-cps (cdr lis) return)))))
+
+; append-cps
+
+(define myappend
+  (lambda (l1 l2)
+    (if (null? l1)
+        l2
+        (cons (car l1) (myappend (cdr lis2))))))
+
+(define myappend-cps
+  (lambda (l1 l2 return)
+    (if (null? l1)
+        (return l2)
+        (myappend-cps (cdr l1) l2 (lambda (v) (return (cons (car l1) v)))))))
+
+(define myreverse
+  (lambda (lis)
+    (if (null? lis)
+        '()
+        (append (myreverse (cdr lis)) (cons (car lis)) '()))))
+
+(define myreverse-cps
+  (lambda (lis return)
+    (if (null? lis)
+        (return '())
+        (myreverse-cps (cdr lis) (lambda (v) (myappend-cps v (cons (car lis) '()) return))))))
+
+
+
+; flatten-cps
+(define flatten
+  (lambda (lis)
+    (cond
+      ((null? lis) '())
+      ((list? (car lis)) (append (flatten (car lis) (flatten (cdr lis)))))
+      (else (cons (car lis) (flatten (cdr lis)))))))
+
+(define flatten-cps
+  (lambda (lis return)
+    (cond
+      ((null? lis) '())
+      ((list? (car lis)) 
+
+
+
+
+
+
+
+
+
+
